@@ -20,8 +20,8 @@ return new class extends Migration
             $table->date("added");
             $table->integer("price")->nullable();
             $table->integer("final_price")->nullable();
-            $table->unsignedBigInteger("rarity_id");
-            $table->unsignedBigInteger("type_id");
+            $table->unsignedBigInteger("rarity_id")->nullable();
+            $table->unsignedBigInteger("type_id")->nullable();
 
             $table->foreign("rarity_id")->references("id")->on("rarities");
             $table->foreign("type_id")->references("id")->on("types");
