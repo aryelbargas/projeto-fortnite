@@ -15,7 +15,7 @@ class Cosmetic extends Model
         "added",
         "price",
         "final_price",
-        "rarity_id",
-        "type_id"
+        "rarity",
+        "type"
     ];
 }

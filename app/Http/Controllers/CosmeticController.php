@@ -14,4 +14,9 @@ class CosmeticController extends Controller
     {
         $this->cosmeticService->syncAllCosmetics();
     }
+
+    public function list()
+    {
+        return $this->cosmeticService->list();
+    }
 }
