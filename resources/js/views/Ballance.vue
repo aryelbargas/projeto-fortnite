@@ -2,22 +2,17 @@
   import { ref } from 'vue'
   import Header from '../components/Header.vue'
   import Footer from '../components/Footer.vue'
-  import Gallery from '../components/Gallery.vue'
   import Pagination from '../components/Pagination.vue'
+  import TableBallance from "../components/TableBallance.vue";
 
   const count = ref(0)
 </script>
 
 <template>
   <Header/>
-  <div class="flex items-center justify-center py-4 md:py-8 flex-wrap">
-    <h1 class="text-center text-2xl text-white">Bem-vindo á Loja de Cosméticos Fortnite!</h1>
-  </div>
-  <Gallery 
-    :cosmetics="cosmetics"
-  />
+  <TableBallance :registers="registers"/>
   <div>
-      <Pagination :pages="pages" :from="from" :to="to" :total="total" @pageChanged="fetchCosmetics"/>
+      <Pagination :pages="pages" :from="from" :to="to" :total="total" @pageChanged="fetchBallance"/>
   </div>
   <Footer/>
 </template>
@@ -25,7 +20,7 @@
     export default {
         data() {
             return {
-                cosmetics: [],
+                registers: [],
                 pages: [],
                 from: 0,
                 to: 0,
@@ -33,11 +28,11 @@
             }
         },
         created() {
-            this.fetchCosmetics(1);
+            this.fetchBallance(1);
         },
         methods: {
-            fetchCosmetics(page) {this.axios.get("/api/cosmetics?page=" + page).then((response) => {
-                    this.cosmetics = response.data.data;
+            fetchBallance(page) {this.axios.get("/api/user/ballance?page=" + page).then((response) => {
+                    this.registers = response.data.data;
                     this.pages = response.data.links;
                     this.from = response.data.from;
                     this.to = response.data.to;

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center justify-between border-t border-white/10 px-4 py-3 sm:px-6 bg-gray-800">
+    <div class="flex items-center justify-between border-t border-white/10 px-8 py-8 sm:px-6 bg-gray-800">
         <div class="flex flex-1 justify-between sm:hidden">
         <a href="#" class="relative inline-flex items-center rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-white/10">Anterior</a>
         <a href="#" class="relative ml-3 inline-flex items-center rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-white/10">Próximo</a>

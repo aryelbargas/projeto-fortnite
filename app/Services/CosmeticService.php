@@ -5,18 +5,30 @@ namespace App\Services;
 use App\Utils\FortniteAPIUtil;
 
 use App\Repositories\CosmeticRepository;
+use App\Repositories\VBuckBallanceRepository;
+
+use \Exception;
 
 class CosmeticService
 {
 
     public function __construct(
         private FortniteAPIUtil $fortniteAPIUtil,
-        private CosmeticRepository $cosmeticRepository
+        private CosmeticRepository $cosmeticRepository,
+        private VBuckBallanceRepository $vBuckBallanceRepository
     ) {}
 
-    public function list() 
+    public function list(?int $userId = null) 
     {
-        return $this->cosmeticRepository->list();
+        $cosmetics = $this->cosmeticRepository->list()->toArray();
+
+        if($userId == null) {
+            return $cosmetics;
+        }
+
+        $cosmetics['data'] = $this->verifyOwnedCosmetics($userId, $cosmetics["data"]);
+
+        return $cosmetics;
     }
 
     public function syncAllCosmetics()
@@ -113,5 +125,70 @@ class CosmeticService
         }
 
         return "";
+    }
+
+    public function listComesticsByUserID(int $userId)
+    {
+        $cosmetics = $this->cosmeticRepository->listComesticsByUserID($userId)->toArray();
+        
+        $cosmetics['data'] = $this->verifyOwnedCosmetics($userId, $cosmetics['data']);
+
+        return $cosmetics;
+    }
+
+    public function addCosmeticToUser(int $cosmeticId, int $userId)
+    {
+        if($this->cosmeticRepository->isCosmeticOwnedByUser($cosmeticId, $userId)) {
+            $this->removeCosmeticFromUser($cosmeticId, $userId);
+            return;
+        }
+
+        $userVBucks = $this->vBuckBallanceRepository->userTotalVBucks($userId);
+        $cosmetic = $this->cosmeticRepository->getById($cosmeticId);
+
+        if($cosmetic->final_price > $userVBucks) {
+            throw new Exception("Saldo insuficiente.");
+        }
+
+        $this->cosmeticRepository->addCosmeticToUser($cosmeticId, $userId);
+        $this->vBuckBallanceRepository->create(
+            [
+                "value" => -$cosmetic->final_price,
+                "description" => 'Comprou o cosmetico "' . $cosmetic->name . '".',
+                "user_id" => $userId,
+                "cosmetic_id" => $cosmeticId
+            ]
+        );
+    }
+
+    public function removeCosmeticFromUser(int $cosmeticId, int $userId)
+    {
+        if(!$this->cosmeticRepository->isCosmeticOwnedByUser($cosmeticId, $userId)) {
+            return;
+        }
+
+        $cosmetic = $this->cosmeticRepository->getById($cosmeticId);
+
+        $this->cosmeticRepository->removeCosmeticFromUser($cosmeticId, $userId);
+        $this->vBuckBallanceRepository->create(
+            [
+                "value" => $cosmetic->final_price,
+                "description" => 'Devolveu o cosmetico "' . $cosmetic->name . '".',
+                "user_id" => $userId,
+                "cosmetic_id" => $cosmeticId
+            ]
+        );
+    }
+
+    public function verifyOwnedCosmetics(int $userId, array $cosmetics): array
+    {
+        $ownedCosmetics = [];
+
+        foreach ($cosmetics as $cosmetic) {
+            $cosmetic['owned'] = $this->cosmeticRepository->isCosmeticOwnedByUser($cosmetic['id'], $userId);
+            $ownedCosmetics[] = $cosmetic;
+        }
+
+        return $ownedCosmetics;
     }
 }
