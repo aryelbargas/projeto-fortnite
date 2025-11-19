@@ -1,25 +1,25 @@
 <script setup>
-  import { ref } from 'vue'
-  import Header from '../components/Header.vue'
-  import Footer from '../components/Footer.vue'
-  import Gallery from '../components/Gallery.vue'
-  import Pagination from '../components/Pagination.vue'
+    import { ref } from 'vue'
+    import Header from '../components/Header.vue'
+    import Footer from '../components/Footer.vue'
+    import Gallery from '../components/Gallery.vue'
+    import Pagination from '../components/Pagination.vue'
 
-  const count = ref(0)
+    const count = ref(0)
 </script>
 
 <template>
-  <Header/>
-  <div class="flex items-center justify-center py-4 md:py-8 flex-wrap">
-    <h1 class="text-center text-2xl text-white">Bem-vindo á Loja de Cosméticos Fortnite!</h1>
-  </div>
-  <Gallery 
-    :cosmetics="cosmetics"
-  />
-  <div>
-      <Pagination :pages="pages" :from="from" :to="to" :total="total" @pageChanged="fetchCosmetics"/>
-  </div>
-  <Footer/>
+    <Header/>
+    <div class="flex items-center justify-center py-4 md:py-8 flex-wrap">
+        <h1 class="text-center text-2xl text-white">Bem-vindo á Loja de Cosméticos Fortnite!</h1>
+    </div>
+    <Gallery 
+        :cosmetics="cosmetics"
+    />
+    <div>
+        <Pagination :pages="pages" :from="from" :to="to" :total="total" @pageChanged="fetchCosmetics"/>
+    </div>
+    <Footer/>
 </template>
 <script>
     export default {
