@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  mysql-app:
+      image: mysql:5.7.22
+      ports:
+        - "3307:3306"
+      volumes:
+        - .docker/dbdata:/var/lib/mysql
+      environment:
+        MYSQL_DATABASE: dbname
+        MYSQL_ROOT_PASSWORD: pwd
+      command:
+        'mysqld --innodb-flush-method=fsync'
+      networks:
+        - app-network
+      healthcheck:
+        test:  mysqladmin ping -h 127.0.0.1 -u root --password=pwd
+        interval: 5s
+        timeout: 10s
+        retries: 5
+  app:
+    build: .
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/usr/share/nginx
+    networks:
+      - app-network
+    depends_on: 
+      mysql-app:
+        condition: service_healthy
+
+networks:
+    app-network:
+      driver: bridge
